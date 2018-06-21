@@ -4,16 +4,21 @@ var roleHarvester = {
 
 	/** @param {Creep} creep **/
 	run: function (creep) {
+
 		// Wenn keine Source zugeiwesen ist, dann wird eine Source zuweisen
 		if (!creep.memory.source) {
-			// creep.memory.sourceId = helper.getHarvesterSource()
-			console.log('asd');
-			creep.memory.source = 'asd';
+			Game.rooms[creep.memory.room].find(FIND_SOURCES).forEach(function (source) {
+				var sourceCreeps = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester' && creep.memory.room === source.room.name && creep.memory.source === source.id);
+
+				if ( sourceCreeps.length < source.freeSpaceCount) {
+					creep.memory.source = source.id;
+				}
+			});
 		}
 
 		// Wenn Kapazität vorhanden, dann sammel Energie bis voll
 		if (creep.carry.energy < creep.carryCapacity) {
-			var source = Game.getObjectById(creep.memory.sourceId);
+			var source = Game.getObjectById(creep.memory.source);
 			if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
 				creep.moveTo(source, {
 					visualizePathStyle: {
@@ -23,54 +28,47 @@ var roleHarvester = {
 			}
 		} else {
 			// Sonst werde die Energie los
-			// #1 Strukturen in der nähe
-			// #2 Bauplätze in der nähe
-			// ist doof // #3 Creeps in der nähe
-			// #4 Strukturen
-			// #5 controller
-			// ist doof // #6 drop
 
-			/*
-			   var targetStructureInRange = creep.room.findInRange(FIND_STRUCTURES, 1 {
-			     filter: (structure) => {
-			       return (structure.structureType === STRUCTURE_EXTENSION ||
-			         structure.structureType === STRUCTURE_SPAWN ||
-			         structure.structureType === STRUCTURE_TOWER) && structure.energy < structure.energyCapacity
-			     }
-			   })
-			   if (targetStructureInRange.length > 0) {
-			     creep.transfer(targetStructureInRange[0], RESOURCE_ENERGY)
-			   } else {
-			     var targetConstructionInRange = creep.room.findInRange(FIND_CONSTRUCTION_SITES, 3)
-			     if (targetConstructionInRange.length > 0) {
-			       console.log("asd")
-			     }
-			   }
+			// TODO
 
-			   var targetCreepsInRange = []
+			/* Das ist schlecht ....
 
-			   var targetStructure = creep.room.find(FIND_STRUCTURES {
-			     filter: (structure) => {
-			       return (structure.structureType === STRUCTURE_EXTENSION ||
-			         structure.structureType === STRUCTURE_SPAWN ||
-			         structure.structureType === STRUCTURE_TOWER) && structure.energy < structure.energyCapacity
-			     }
-			   })
+						var targetStructureInRange = creep.pos.findInRange(FIND_STRUCTURES, 1,
+							{ filter: (structure) => {
+									return (structure.structureType === STRUCTURE_EXTENSION ||
+									structure.structureType === STRUCTURE_SPAWN ||
+									structure.structureType === STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+								}
+							});
 
-			   //Default: Controler
+						var targetCreepsInRange = [];
 
-			   var targets = targetStructureInRange.concat(targetConstructionInRange).concat(targetCreepsInRange).concat(targetStructure)
+						var targetStructure = creep.pos.findInRange(FIND_STRUCTURES , 3, {
+							filter: (structure) => {
+								return (structure.structureType === STRUCTURE_EXTENSION ||
+								structure.structureType === STRUCTURE_SPAWN ||
+								structure.structureType === STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+							}
+						});
 
-			   if (targets.length > 0) {
-			     if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-			       creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffffff' } })
-			     }
-			   }
-			 }
-  }
-}
+						if (targetStructureInRange.length > 0) {
+							creep.transfer(targetStructureInRange[0], RESOURCE_ENERGY);
+						} else {
+							var targetConstructionInRange = creep.pos.findInRange(FIND_CONSTRUCTION_SITES, 3);
+							if (targetConstructionInRange.length > 0) {
+								console.log('asd');
+							}
+						}
 
-*/
+						// Default: Controler
+
+						if (targets.length > 0) {
+							if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+								creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffffff' } });
+							}
+						}
+
+						*/
 
 		}
 	}

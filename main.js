@@ -32,4 +32,3 @@ module.exports.loop = function () {
 		Game.spawns[spawnName].spawnCreeps();
 	}
 };
-console.log('asd');
